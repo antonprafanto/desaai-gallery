@@ -38,7 +38,7 @@ An **offline-first AI assistant** running 100% on-device using Gemma 4 models, w
 - ✅ **Low-end Device Support** - Optimized for 2GB+ RAM devices via LiteRT
 - ✅ **Multilingual** - Indonesian + Javanese language support
 - ✅ **9 Custom Agent Skills** - Agriculture, health, education, governance, UMKM
-- ✅ **Intelligent Model Routing** - Auto-selects optimal model (270M/E2B/E4B) based on query complexity
+- 🔄 **Intelligent Model Routing** _(In Development - Cactus Prize Week 2)_
 
 ---
 
@@ -47,7 +47,7 @@ An **offline-first AI assistant** running 100% on-device using Gemma 4 models, w
 ### Models Used
 - **Gemma-4-E2B-it** (2.5GB) - Medium complexity queries, Agent Skills
 - **Gemma-4-E4B-it** (3.6GB) - Complex reasoning tasks
-- **FunctionGemma-270M** - Fine-tuned for village-specific function calling (Unsloth optimization)
+- **FunctionGemma-270M** - Planned: fine-tuned for village-specific function calling via Unsloth _(Week 2 - In Development)_
 
 ### Technology Stack
 - **On-device Runtime:** LiteRT (TensorFlow Lite) + MediaPipe
@@ -123,9 +123,9 @@ Complex query → Gemma-4-E4B (powerful, 2-6min)
 ### Model Routing Efficiency
 | Model | Avg Response Time | Memory Usage | Battery/hour | Best For |
 |-------|------------------|--------------|--------------|----------|
-| FunctionGemma 270M | 3.9s | 600MB | 15% | Simple queries |
-| Gemma-4-E2B | 20-30s | 2.5GB | 25% | Medium tasks |
-| Gemma-4-E4B | 2-6min | 3.6GB | 35% | Complex reasoning |
+| Gemma-4-E2B | 20-30s | 2.5GB | ~25% | Agent Skills, medium tasks |
+| Gemma-4-E4B | 2-6min | 3.6GB | ~35% | Complex reasoning |
+| FunctionGemma 270M | _(Projected: ~4s)_ | _(~600MB)_ | _(~15%)_ | Simple queries _(fine-tuning Week 2)_ |
 
 ### Fine-tuning (Unsloth) _(Week 2 - In Progress)_
 - **Training speed:** 2× faster than standard LoRA
