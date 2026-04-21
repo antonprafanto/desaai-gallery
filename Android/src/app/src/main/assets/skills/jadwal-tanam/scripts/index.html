@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jadwal Tanam</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f0f7ee; color: #2d3a2e; font-size: 14px; }
+  .container { max-width: 480px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 18px; color: #2e7d32; text-align: center; margin-bottom: 4px; }
+  .subtitle { text-align: center; color: #558b2f; font-size: 12px; margin-bottom: 16px; }
+  .info-box { background: #fff; border-radius: 12px; padding: 14px; margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .info-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .label { color: #666; font-size: 12px; }
+  .value { font-weight: 600; color: #2e7d32; }
+  .current-status { border-radius: 10px; padding: 12px 16px; margin-bottom: 12px;
+    text-align: center; font-weight: 700; font-size: 15px; }
+  .status-tanam { background: #c8e6c9; color: #1b5e20; }
+  .status-tumbuh { background: #fff9c4; color: #f57f17; }
+  .status-panen { background: #ffe0b2; color: #e65100; }
+  .status-istirahat { background: #e8eaf6; color: #283593; }
+  .calendar { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-bottom: 12px; }
+  .month { border-radius: 6px; padding: 6px 2px; text-align: center; font-size: 11px; font-weight: 600; }
+  .m-tanam { background: #a5d6a7; color: #1b5e20; }
+  .m-tumbuh { background: #fff59d; color: #f57f17; }
+  .m-panen { background: #ffcc80; color: #bf360c; }
+  .m-istirahat { background: #e0e0e0; color: #616161; }
+  .m-current { border: 2px solid #f44336; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .leg-item { display: flex; align-items: center; gap: 4px; font-size: 11px; }
+  .leg-dot { width: 12px; height: 12px; border-radius: 3px; }
+  .tips { background: #e8f5e9; border-left: 4px solid #43a047; border-radius: 4px;
+    padding: 10px 12px; font-size: 12px; line-height: 1.5; }
+  .tips strong { color: #2e7d32; display: block; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1 id="title">📅 Kalender Tanam</h1>
+  <p class="subtitle" id="subtitle">Memuat data...</p>
+
+  <div class="current-status" id="currentStatus"></div>
+
+  <div class="info-box">
+    <div class="info-row">
+      <span class="label">🌱 Varietas terbaik</span>
+      <span class="value" id="varietas">-</span>
+    </div>
+    <div class="info-row">
+      <span class="label">⏱️ Umur panen</span>
+      <span class="value" id="umurPanen">-</span>
+    </div>
+    <div class="info-row">
+      <span class="label">💧 Kebutuhan air</span>
+      <span class="value" id="air">-</span>
+    </div>
+    <div class="info-row">
+      <span class="label">🌡️ Suhu optimal</span>
+      <span class="value" id="suhu">-</span>
+    </div>
+  </div>
+
+  <div class="calendar" id="calendarGrid"></div>
+
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#a5d6a7"></div> Tanam</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#fff59d"></div> Tumbuh</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#ffcc80"></div> Panen</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#e0e0e0"></div> Istirahat</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#fff;border:2px solid #f44336"></div> Bulan ini</div>
+  </div>
+
+  <div class="tips" id="tips"><strong>💡 Tips</strong><span id="tipsText">Memuat...</span></div>
+</div>
+
+<script>
+const DATA = {
+  padi: {
+    nama: "Padi",
+    icon: "🌾",
+    varietas: "IR64, Ciherang, Inpari 32",
+    umurPanen: "105–115 hari",
+    air: "Tinggi (sawah irigasi)",
+    suhu: "22–32°C",
+    // 1=Tanam, 2=Tumbuh, 3=Panen, 0=Istirahat
+    kalender: [1,1,2,2,2,3,0,1,2,2,2,3],
+    tips: "Sebelum tanam: olah tanah 2 minggu sebelumnya. Rendam benih 24 jam, semai 21 hari. Tanam saat awal musim hujan (Okt–Nov) atau awal kemarau (Mar–Apr) untuk hasil terbaik.",
+    statusBulanIni: ["Persiapan tanam","Persiapan tanam","Masa pertumbuhan","Masa pertumbuhan","Masa pertumbuhan","Panen musim 1","Persiapan lahan","Tanam musim 2","Masa pertumbuhan","Masa pertumbuhan","Masa pertumbuhan","Panen musim 2"]
+  },
+  jagung: {
+    nama: "Jagung",
+    icon: "🌽",
+    varietas: "NK212, Pioneer P36, Bisi 2",
+    umurPanen: "85–100 hari",
+    air: "Sedang",
+    suhu: "21–30°C",
+    kalender: [1,2,2,3,0,1,2,2,3,0,1,2],
+    tips: "Jarak tanam 70×25 cm. Pupuk Urea dosis: 200 kg/ha. Tanam setelah panen padi untuk rotasi optimal. Hindari genangan air.",
+    statusBulanIni: ["Tanam","Masa pertumbuhan","Masa pertumbuhan","Panen","Persiapan lahan","Tanam","Masa pertumbuhan","Masa pertumbuhan","Panen","Persiapan lahan","Tanam","Masa pertumbuhan"]
+  },
+  cabai: {
+    nama: "Cabai",
+    icon: "🌶️",
+    varietas: "Lado F1, PM 999, Tanjung 2",
+    umurPanen: "75–90 hari (panen bertahap)",
+    air: "Sedang–Tinggi",
+    suhu: "24–30°C",
+    kalender: [0,1,1,2,2,3,3,3,3,3,0,0],
+    tips: "Persemaian 25–30 hari sebelum tanam. Mulsa plastik sangat dianjurkan. Panen bertahap setiap 3–5 hari. Harga tertinggi biasanya Desember–Februari.",
+    statusBulanIni: ["Persiapan lahan","Persemaian/Tanam","Persemaian/Tanam","Masa pertumbuhan","Masa pertumbuhan","Panen bertahap","Panen bertahap","Panen bertahap","Panen bertahap","Panen bertahap","Persiapan lahan","Persiapan lahan"]
+  },
+  tomat: {
+    nama: "Tomat",
+    icon: "🍅",
+    varietas: "Servo F1, Permata, Mutiara",
+    umurPanen: "70–80 hari",
+    air: "Sedang",
+    suhu: "15–30°C",
+    kalender: [0,1,2,3,3,0,0,1,2,3,3,0],
+    tips: "Ideal di dataran tinggi >500 mdpl. Persemaian 3–4 minggu. Perlu ajir/tiang penyangga. Hindari tanam saat musim hujan lebat (serangan busuk buah).",
+    statusBulanIni: ["Persiapan lahan","Tanam","Masa pertumbuhan","Panen","Panen","Persiapan lahan","Persiapan lahan","Tanam","Masa pertumbuhan","Panen","Panen","Persiapan lahan"]
+  },
+  bawang: {
+    nama: "Bawang Merah",
+    icon: "🧅",
+    varietas: "Bima Brebes, Tajuk, Katumi",
+    umurPanen: "60–70 hari",
+    air: "Sedang (drainase baik)",
+    suhu: "25–32°C",
+    kalender: [0,1,2,3,1,2,3,0,0,1,2,3],
+    tips: "Gunakan umbi bibit ±5 gram. Tanah harus gembur dan drainase baik. Hati-hati serangan lalat pengorok daun. Keringkan 7–14 hari setelah panen sebelum dijual.",
+    statusBulanIni: ["Persiapan lahan","Tanam","Masa pertumbuhan","Panen","Tanam musim 2","Masa pertumbuhan","Panen musim 2","Persiapan lahan","Persiapan lahan","Tanam musim 3","Masa pertumbuhan","Panen musim 3"]
+  },
+  kacang: {
+    nama: "Kacang Tanah",
+    icon: "🥜",
+    varietas: "Gajah, Kelinci, Sima",
+    umurPanen: "90–100 hari",
+    air: "Rendah–Sedang",
+    suhu: "25–35°C",
+    kalender: [0,0,1,2,2,3,0,1,2,2,3,0],
+    tips: "Cocok di lahan tegalan/sawah kering setelah panen padi. Jarak tanam 40×15 cm. Lakukan pembubunan (nimbun tanah di pangkal) saat umur 30–40 hari.",
+    statusBulanIni: ["Persiapan lahan","Persiapan lahan","Tanam","Masa pertumbuhan","Masa pertumbuhan","Panen","Persiapan lahan","Tanam","Masa pertumbuhan","Masa pertumbuhan","Panen","Persiapan lahan"]
+  },
+  singkong: {
+    nama: "Singkong",
+    icon: "🌿",
+    varietas: "Darul Hidayah, UJ-5, Adira 4",
+    umurPanen: "8–12 bulan",
+    air: "Rendah (tahan kering)",
+    suhu: "25–36°C",
+    kalender: [1,2,2,2,2,2,2,2,3,3,0,0],
+    tips: "Stek batang 20–25 cm, tanam miring 45°. Sangat toleran kekeringan. Cocok untuk lahan marginal. Panen bisa bertahap mulai bulan ke-8. Nilai ekonomi tinggi untuk tepung/pati.",
+    statusBulanIni: ["Tanam","Masa pertumbuhan","Masa pertumbuhan","Masa pertumbuhan","Masa pertumbuhan","Masa pertumbuhan","Masa pertumbuhan","Masa pertumbuhan","Panen","Panen","Persiapan lahan","Persiapan lahan"]
+  }
+};
+
+const BULAN = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+const KELAS = ["m-istirahat","m-tanam","m-tumbuh","m-panen"];
+const STATUS_LABEL = ["Istirahat Lahan","🌱 Waktu Tanam!","🌿 Masa Pertumbuhan","🌾 Waktu Panen!"];
+const STATUS_CLASS = ["status-istirahat","status-tanam","status-tumbuh","status-panen"];
+
+function getMonth() {
+  return new Date().getMonth(); // 0-based
+}
+
+function render(tanaman, wilayah) {
+  const d = DATA[tanaman] || DATA.padi;
+  const bulanIni = getMonth();
+
+  document.getElementById("title").textContent = d.icon + " Kalender " + d.nama;
+  document.getElementById("subtitle").textContent = "Wilayah: " + (wilayah || "Jawa Tengah") + " | Panduan Musim Tanam";
+  document.getElementById("varietas").textContent = d.varietas;
+  document.getElementById("umurPanen").textContent = d.umurPanen;
+  document.getElementById("air").textContent = d.air;
+  document.getElementById("suhu").textContent = d.suhu;
+  document.getElementById("tipsText").textContent = d.tips;
+
+  const statusNow = d.kalender[bulanIni];
+  const statusEl = document.getElementById("currentStatus");
+  statusEl.textContent = "Bulan ini (" + BULAN[bulanIni] + "): " + (d.statusBulanIni[bulanIni] || STATUS_LABEL[statusNow]);
+  statusEl.className = "current-status " + STATUS_CLASS[statusNow];
+
+  const grid = document.getElementById("calendarGrid");
+  grid.innerHTML = "";
+  d.kalender.forEach((s, i) => {
+    const el = document.createElement("div");
+    el.className = "month " + KELAS[s] + (i === bulanIni ? " m-current" : "");
+    el.textContent = BULAN[i];
+    grid.appendChild(el);
+  });
+}
+
+// Entry point: called by Gallery skill system
+function onData(jsonStr) {
+  try {
+    const d = JSON.parse(jsonStr);
+    render((d.tanaman || "padi").toLowerCase(), d.wilayah || "");
+  } catch(e) {
+    render("padi", "");
+  }
+}
+
+// Also support URL params for local testing
+const params = new URLSearchParams(window.location.search);
+if (params.has("tanaman")) {
+  render(params.get("tanaman"), params.get("wilayah") || "");
+} else {
+  render("padi", "Jawa Tengah"); // default preview
+}
+</script>
+</body>
+</html>

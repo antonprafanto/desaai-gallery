@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harga Pasar</title>
+</head>
+<body>
+<script>
+window['ai_edge_gallery_get_result'] = async (dataStr) => {
+  try {
+    const input = JSON.parse(dataStr);
+    const komoditasFilter = (input.komoditas || '').toLowerCase().trim();
+    const wilayah = input.wilayah || 'Jawa Tengah/Timur';
+
+    // =====================================================================
+    // DATA HARGA KOMODITAS
+    // Sumber: Referensi harga rata-rata pasar lokal Jawa, April 2026
+    // Data ini di-embed offline — perlu diupdate berkala via GitHub
+    // =====================================================================
+    const semuaKomoditas = [
+      // HASIL PERTANIAN UTAMA
+      {
+        kategori: 'Padi & Beras',
+        emoji: '🌾',
+        items: [
+          { nama: 'Gabah Kering Panen (GKP)', satuan: 'kg', harga: 6500, min: 6000, max: 7200, tren: 'stabil', info: 'Kualitas IR64. HPP Pemerintah Rp 6.500/kg' },
+          { nama: 'Gabah Kering Giling (GKG)', satuan: 'kg', harga: 7200, min: 6800, max: 7800, tren: 'naik', info: 'Kadar air ≤14%. HPP Rp 7.200/kg' },
+          { nama: 'Beras Medium (Pera)', satuan: 'kg', harga: 13500, min: 12500, max: 14500, tren: 'stabil', info: 'Beras curah pasar tradisional' },
+          { nama: 'Beras Premium', satuan: 'kg', harga: 16000, min: 14000, max: 18000, tren: 'stabil', info: 'Beras pandan wangi / ciherang premium' },
+        ]
+      },
+      {
+        kategori: 'Hortikultura',
+        emoji: '🌶️',
+        items: [
+          { nama: 'Cabai Merah Keriting', satuan: 'kg', harga: 35000, min: 20000, max: 65000, tren: 'fluktuatif', info: 'Harga sangat dipengaruhi musim & cuaca' },
+          { nama: 'Cabai Rawit Merah', satuan: 'kg', harga: 45000, min: 25000, max: 90000, tren: 'fluktuatif', info: 'Sangat sensitif curah hujan' },
+          { nama: 'Cabai Hijau Besar', satuan: 'kg', harga: 22000, min: 15000, max: 35000, tren: 'stabil', info: 'Relatif lebih stabil dari cabai merah' },
+          { nama: 'Tomat', satuan: 'kg', harga: 8000, min: 4000, max: 18000, tren: 'turun', info: 'Sedang panen raya beberapa wilayah' },
+          { nama: 'Bawang Merah', satuan: 'kg', harga: 28000, min: 22000, max: 40000, tren: 'stabil', info: 'Kualitas Brebes/Bima' },
+          { nama: 'Bawang Putih', satuan: 'kg', harga: 38000, min: 32000, max: 48000, tren: 'stabil', info: 'Campuran impor + lokal' },
+        ]
+      },
+      {
+        kategori: 'Tanaman Pangan',
+        emoji: '🌽',
+        items: [
+          { nama: 'Jagung Pipilan Kering', satuan: 'kg', harga: 5200, min: 4800, max: 5800, tren: 'stabil', info: 'Kadar air 14%. Cocok untuk pakan ternak' },
+          { nama: 'Kedelai Lokal', satuan: 'kg', harga: 10500, min: 9500, max: 12000, tren: 'naik', info: 'Kedelai impor lebih murah ~Rp 8.500/kg' },
+          { nama: 'Kacang Tanah', satuan: 'kg', harga: 22000, min: 18000, max: 26000, tren: 'stabil', info: 'Kacang kupas. Kacang kulit lebih murah ~15rb' },
+          { nama: 'Singkong / Ketela', satuan: 'kg', harga: 2800, min: 2200, max: 3500, tren: 'stabil', info: 'Di pabrik tapioka bisa lebih tinggi' },
+          { nama: 'Ubi Jalar', satuan: 'kg', harga: 5500, min: 4000, max: 7000, tren: 'stabil', info: 'Ubi putih. Ubi ungu premium ~Rp 8.000/kg' },
+        ]
+      },
+      {
+        kategori: 'Pupuk & Saprotan',
+        emoji: '🪣',
+        items: [
+          { nama: 'Urea Subsidi', satuan: 'kg', harga: 2250, min: 2000, max: 2500, tren: 'stabil', info: 'HET Permentan. Syarat: kartu tani / RDKK' },
+          { nama: 'Urea Non-Subsidi', satuan: 'kg', harga: 4500, min: 4000, max: 5200, tren: 'naik', info: 'Harga pasar bebas' },
+          { nama: 'NPK Phonska Subsidi', satuan: 'kg', harga: 2300, min: 2100, max: 2600, tren: 'stabil', info: 'HET Permentan. Beli di kios resmi KP3' },
+          { nama: 'SP-36 Non-Subsidi', satuan: 'kg', harga: 4500, min: 4000, max: 5000, tren: 'stabil', info: '' },
+          { nama: 'KCl (Kalium Klorida)', satuan: 'kg', harga: 8000, min: 6500, max: 9500, tren: 'naik', info: 'Import, terpengaruh kurs USD' },
+        ]
+      }
+    ];
+
+    // Filter jika ada komoditas spesifik
+    let filtered = semuaKomoditas;
+    let filterLabel = 'Semua Komoditas';
+    if (komoditasFilter) {
+      filtered = semuaKomoditas.map(kat => ({
+        ...kat,
+        items: kat.items.filter(item =>
+          item.nama.toLowerCase().includes(komoditasFilter) ||
+          kat.kategori.toLowerCase().includes(komoditasFilter)
+        )
+      })).filter(kat => kat.items.length > 0);
+      filterLabel = komoditasFilter.charAt(0).toUpperCase() + komoditasFilter.slice(1);
+      if (filtered.length === 0) filtered = semuaKomoditas; // fallback ke semua
+    }
+
+    // Build result text untuk LLM
+    const lines = [];
+    filtered.forEach(kat => {
+      lines.push(`\n${kat.kategori}:`);
+      kat.items.forEach(item => {
+        const trendIcon = item.tren === 'naik' ? '📈' : item.tren === 'turun' ? '📉' : item.tren === 'fluktuatif' ? '〰️' : '➡️';
+        lines.push(`- ${item.nama}: Rp ${item.harga.toLocaleString('id-ID')}/${item.satuan} ${trendIcon} (kisaran Rp ${item.min.toLocaleString('id-ID')}-${item.max.toLocaleString('id-ID')})`);
+      });
+    });
+
+    const resultText = [
+      `Informasi harga komoditas di ${wilayah} (data referensi April 2026):`,
+      ...lines,
+      '\n⚠️ Harga bersifat referensi. Untuk harga aktual, cek di pasar induk atau Siskaperbapo setempat.'
+    ].join('\n');
+
+    localStorage.setItem('harga_pasar_data', JSON.stringify({
+      filterLabel,
+      wilayah,
+      data: filtered,
+      tanggal: 'April 2026'
+    }));
+
+    return JSON.stringify({
+      result: resultText,
+      webview: {
+        url: 'webview.html',
+        aspectRatio: 1.7
+      }
+    });
+
+  } catch (e) {
+    return JSON.stringify({ error: `Harga Pasar error: ${e.message}` });
+  }
+};
+</script>
+</body>
+</html>

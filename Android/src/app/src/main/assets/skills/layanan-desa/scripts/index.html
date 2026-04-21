@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layanan Desa</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f3f6fd; color: #1a237e; font-size: 14px; }
+  .container { max-width: 480px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 17px; color: #1565c0; margin-bottom: 4px; }
+  .subtitle { color: #5c6bc0; font-size: 12px; margin-bottom: 14px; }
+  .badge { display: inline-block; background: #e3f2fd; color: #1565c0; border-radius: 20px;
+    padding: 3px 10px; font-size: 11px; font-weight: 600; margin-bottom: 12px; }
+  .card { background: #fff; border-radius: 12px; padding: 14px; margin-bottom: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.07); }
+  .card-title { font-weight: 700; color: #1565c0; margin-bottom: 8px; font-size: 14px; }
+  .step { display: flex; gap: 10px; margin-bottom: 8px; align-items: flex-start; }
+  .step-num { min-width: 22px; height: 22px; border-radius: 50%; background: #1565c0;
+    color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center;
+    justify-content: center; }
+  .step-text { color: #333; line-height: 1.4; font-size: 13px; }
+  .syarat-list { padding-left: 16px; }
+  .syarat-list li { color: #444; font-size: 13px; margin-bottom: 4px; line-height: 1.4; }
+  .info-row { display: flex; gap: 8px; margin-bottom: 6px; align-items: flex-start; }
+  .info-label { min-width: 80px; font-size: 12px; color: #777; }
+  .info-val { font-size: 12px; color: #333; font-weight: 500; }
+  .alert { background: #fff3e0; border-left: 4px solid #ff9800; border-radius: 4px;
+    padding: 10px 12px; font-size: 12px; color: #e65100; line-height: 1.5; margin-top: 10px; }
+  .tip { background: #e8f5e9; border-left: 4px solid #43a047; border-radius: 4px;
+    padding: 10px 12px; font-size: 12px; color: #2e7d32; line-height: 1.5; margin-top: 10px; }
+  .free-tag { background: #c8e6c9; color: #1b5e20; border-radius: 10px;
+    padding: 2px 8px; font-size: 11px; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1 id="title">🏛️ Layanan Desa</h1>
+  <p class="subtitle" id="subtitle">Panduan lengkap administrasi & bantuan sosial</p>
+  <span class="badge" id="badge">Memuat...</span>
+
+  <div id="content"></div>
+</div>
+
+<script>
+const LAYANAN = {
+  ktp: {
+    icon: "🪪", judul: "KTP Elektronik (e-KTP)",
+    badge: "Dokumen Wajib",
+    biaya: "GRATIS",
+    waktu: "1–14 hari kerja",
+    kantor: "Kantor Desa → Disdukcapil Kecamatan",
+    syarat: [
+      "Surat pengantar dari RT/RW",
+      "Fotokopi Kartu Keluarga (KK)",
+      "Pas foto 3×4 (2 lembar) — bagi yang belum rekam",
+      "Jika KTP hilang: Surat Kehilangan dari Kepolisian",
+      "Jika KTP rusak: bawa KTP lama yang rusak"
+    ],
+    langkah: [
+      "Minta surat pengantar ke RT/RW setempat",
+      "Datang ke kantor desa/kelurahan dengan surat pengantar & KK",
+      "Isi formulir F1.21 (permohonan KTP)",
+      "Bawa ke Disdukcapil Kecamatan untuk perekaman sidik jari & foto",
+      "Tunggu proses cetak (1–14 hari), ambil dengan menunjukkan tanda terima"
+    ],
+    tip: "Rekaman e-KTP cukup 1 kali seumur hidup. Jika sudah pernah rekam tapi belum punya fisik, tanyakan ke Disdukcapil — bisa langsung cetak.",
+    alert: ""
+  },
+  kk: {
+    icon: "👨‍👩‍👧", judul: "Kartu Keluarga (KK)",
+    badge: "Dokumen Keluarga",
+    biaya: "GRATIS",
+    waktu: "3–7 hari kerja",
+    kantor: "Kantor Desa → Disdukcapil",
+    syarat: [
+      "KK lama (jika ada perubahan/perpecahan)",
+      "Buku Nikah / Akta Perkawinan (jika menikah baru)",
+      "Akta Kelahiran anak (jika menambah anggota)",
+      "Surat Keterangan Pindah (jika pindah dari daerah lain)",
+      "KTP Kepala Keluarga"
+    ],
+    langkah: [
+      "Siapkan dokumen sesuai jenis perubahan (nikah baru, tambah anak, dll.)",
+      "Datang ke kantor desa, minta surat pengantar",
+      "Bawa ke Disdukcapil dengan semua dokumen",
+      "Isi formulir permohonan KK baru",
+      "Tunggu proses dan ambil KK baru"
+    ],
+    tip: "KK baru diperlukan saat: menikah, punya anak, ada anggota meninggal, atau pindah alamat. Simpan KK asli dengan baik karena sering dibutuhkan.",
+    alert: ""
+  },
+  akta: {
+    icon: "📜", judul: "Akta Kelahiran",
+    badge: "Dokumen Anak Wajib",
+    biaya: "GRATIS (usia ≤60 hari dari kelahiran)",
+    waktu: "1–7 hari kerja",
+    kantor: "Kantor Desa → Disdukcapil",
+    syarat: [
+      "Surat Keterangan Lahir dari bidan/dokter/puskesmas",
+      "Buku Nikah / Akta Perkawinan orang tua",
+      "KTP kedua orang tua",
+      "Kartu Keluarga",
+      "2 orang saksi kelahiran (bawa KTP saksi)"
+    ],
+    langkah: [
+      "Ambil Surat Keterangan Lahir dari bidan/puskesmas tempat melahirkan",
+      "Datang ke kantor desa untuk surat pengantar",
+      "Bawa semua dokumen ke Disdukcapil Kecamatan/Kabupaten",
+      "Isi formulir permohonan akta kelahiran",
+      "Ambil akta dalam 1–7 hari kerja"
+    ],
+    tip: "Daftarkan dalam 60 hari dari tanggal lahir — GRATIS dan prosesnya lebih cepat. Lewat dari itu bisa kena biaya dan perlu penetapan pengadilan.",
+    alert: "Anak tanpa akta kelahiran tidak bisa masuk sekolah negeri dan tidak bisa urus beasiswa. Segera urus!"
+  },
+  bansos: {
+    icon: "🤝", judul: "Bantuan Sosial (BLT/BST)",
+    badge: "Bantuan Pemerintah",
+    biaya: "GRATIS",
+    waktu: "Proses 1–3 bulan",
+    kantor: "Kantor Desa/Kelurahan",
+    syarat: [
+      "KTP dan KK aktif",
+      "Tidak memiliki penghasilan tetap / penghasilan di bawah UMR",
+      "Bukan PNS, TNI, Polri, atau pegawai BUMN",
+      "Terdaftar dalam Data Terpadu Kesejahteraan Sosial (DTKS)",
+      "Direkomendasikan oleh RT/RW dan kepala desa"
+    ],
+    langkah: [
+      "Lapor ke RT/RW bahwa ingin mendaftar bansos",
+      "RT/RW mengusulkan ke musyawarah desa untuk masuk DTKS",
+      "Kepala Desa mengirim data ke Dinas Sosial Kabupaten",
+      "Dinas Sosial memverifikasi dan mendaftarkan ke DTKS pusat",
+      "Jika disetujui, bantu akan dicairkan lewat PT Pos atau bank"
+    ],
+    tip: "Cek apakah nama sudah masuk DTKS di: cekbansos.kemensos.go.id (butuh internet). Tunjukkan ke petugas desa untuk mempercepat proses.",
+    alert: "Jangan bayar siapapun yang menjanjikan mempercepat bansos! Semua proses GRATIS dan resmi melalui desa."
+  },
+  bpjs: {
+    icon: "🏥", judul: "BPJS Kesehatan Gratis (PBI)",
+    badge: "Jaminan Kesehatan",
+    biaya: "GRATIS (ditanggung negara untuk keluarga miskin)",
+    waktu: "1–3 bulan",
+    kantor: "Kantor Desa → Dinas Sosial",
+    syarat: [
+      "KTP dan KK aktif",
+      "Belum memiliki BPJS Kesehatan aktif apapun",
+      "Tergolong keluarga tidak mampu (miskin/hampir miskin)",
+      "Terdaftar atau diusulkan masuk DTKS"
+    ],
+    langkah: [
+      "Datang ke kantor desa, beritahu ingin daftar BPJS PBI (gratis)",
+      "Kepala desa mengusulkan ke Dinas Sosial untuk masuk DTKS",
+      "Setelah masuk DTKS, otomatis didaftarkan sebagai peserta PBI",
+      "Dapat kartu BPJS atau cukup gunakan NIK di KTP saat berobat",
+      "Bisa langsung pakai di Puskesmas terdekat"
+    ],
+    tip: "Sejak 2022, tidak perlu bawa kartu fisik BPJS. Cukup tunjukkan KTP di Puskesmas. Puskesmas WAJIB melayani peserta PBI.",
+    alert: "Jika sudah masuk DTKS tapi belum dapat BPJS, laporkan langsung ke kantor BPJS Kesehatan terdekat dengan bawa KTP dan KK."
+  },
+  pkh: {
+    icon: "💰", judul: "Program Keluarga Harapan (PKH)",
+    badge: "Bantuan Tunai Bersyarat",
+    biaya: "GRATIS",
+    waktu: "2–6 bulan proses seleksi",
+    kantor: "Kantor Desa → Dinas Sosial → Pendamping PKH",
+    syarat: [
+      "Terdaftar dalam DTKS sebagai keluarga miskin",
+      "Memiliki komponen: ibu hamil, balita, anak SD/SMP/SMA, atau lansia 70+",
+      "KTP dan KK aktif",
+      "Belum menerima bantuan serupa dari sumber lain"
+    ],
+    langkah: [
+      "Usulkan diri ke kepala desa/RT untuk masuk DTKS",
+      "Pendamping PKH dari Dinas Sosial akan melakukan verifikasi ke rumah",
+      "Jika lolos, diundang ke pertemuan kelompok PKH bulanan (WAJIB hadir)",
+      "Bantuan dicairkan tiap 3 bulan via rekening Bank Himbara (BNI/BRI/Mandiri/BTN)",
+      "Anak WAJIB sekolah dan anak/ibu hamil WAJIB rutin ke Posyandu"
+    ],
+    tip: "Besaran PKH 2024: Ibu hamil Rp750rb/3bln, Balita Rp750rb/3bln, SD Rp225rb/3bln, SMP Rp375rb/3bln, SMA Rp500rb/3bln, Lansia 70+ Rp600rb/3bln.",
+    alert: "PKH bersyarat! Anak harus rajin sekolah dan rutin ke Posyandu. Jika tidak, bantuan bisa dicabut."
+  },
+  sktm: {
+    icon: "📄", judul: "Surat Keterangan Tidak Mampu (SKTM)",
+    badge: "Surat Keterangan",
+    biaya: "GRATIS",
+    waktu: "1–3 hari",
+    kantor: "Kantor Desa/Kelurahan",
+    syarat: [
+      "KTP pemohon",
+      "Kartu Keluarga",
+      "Surat pengantar dari RT/RW",
+      "Keterangan kondisi ekonomi (bisa lisan ke kepala desa)"
+    ],
+    langkah: [
+      "Datang ke RT/RW, minta surat pengantar SKTM",
+      "Bawa surat pengantar RT/RW ke kantor desa/kelurahan",
+      "Isi formulir permohonan SKTM",
+      "Kepala Desa menandatangani dan memberi cap desa",
+      "SKTM siap digunakan (biasanya berlaku 3–6 bulan)"
+    ],
+    tip: "SKTM digunakan untuk: keringanan biaya RS, beasiswa sekolah, keringanan SPP, daftar bansos, atau keperluan hukum. Buat baru jika sudah kadaluarsa.",
+    alert: ""
+  },
+  pindah: {
+    icon: "🏠", judul: "Surat Keterangan Pindah",
+    badge: "Administrasi Kependudukan",
+    biaya: "GRATIS",
+    waktu: "3–7 hari",
+    kantor: "Kantor Desa Asal → Disdukcapil → Desa Tujuan",
+    syarat: [
+      "KTP pemohon",
+      "KK asli",
+      "Surat pengantar RT/RW asal",
+      "Alamat tujuan pindah yang jelas"
+    ],
+    langkah: [
+      "Lapor ke RT/RW asal, minta surat pengantar pindah",
+      "Bawa ke kantor desa asal untuk Surat Keterangan Pindah",
+      "Bawa ke Disdukcapil untuk mendapat Surat Keterangan Pindah Datang (SKPD)",
+      "Di tempat tujuan, lapor ke RT/RW baru dan desa baru",
+      "Desa tujuan proses KK dan KTP baru dengan alamat baru"
+    ],
+    tip: "Laporkan pindah dalam 30 hari setelah tiba di tempat baru. Pindah domisili tidak mempengaruhi bansos yang sedang diterima — konfirmasi ke dinas sosial tujuan.",
+    alert: ""
+  },
+  usaha: {
+    icon: "🏪", judul: "Izin Usaha Mikro (IUMK / NIB)",
+    badge: "UMKM & Usaha Desa",
+    biaya: "GRATIS (via OSS)",
+    waktu: "1 hari (online) / 3–7 hari (manual)",
+    kantor: "Online: oss.go.id | Offline: Kantor Kecamatan/DPMPTSP",
+    syarat: [
+      "KTP pemilik usaha",
+      "NPWP (jika sudah punya, tidak wajib untuk mikro)",
+      "Nomor HP aktif dan email",
+      "Foto tempat usaha (opsional)"
+    ],
+    langkah: [
+      "Akses oss.go.id (butuh internet) atau minta bantuan kantor desa",
+      "Daftar akun dengan NIK dan email",
+      "Isi data usaha: nama usaha, jenis usaha, alamat, modal",
+      "Submit permohonan — NIB (Nomor Induk Berusaha) langsung terbit",
+      "Download NIB sebagai bukti izin usaha resmi"
+    ],
+    tip: "NIB berlaku seumur hidup dan menggantikan SIUP, TDP, dan IUMK. Dengan NIB, UMKM bisa akses KUR (Kredit Usaha Rakyat) bunga rendah di bank.",
+    alert: "Usaha dengan NIB berhak dapat KUR maksimal Rp500 juta bunga 6%/tahun. Tanyakan ke BRI/BNI/Mandiri terdekat."
+  },
+  pertanian: {
+    icon: "🌾", judul: "Bantuan untuk Petani",
+    badge: "Program Pertanian",
+    biaya: "GRATIS (subsidi pemerintah)",
+    waktu: "Bervariasi per program",
+    kantor: "PPL (Penyuluh Pertanian Lapangan) / BPP Kecamatan",
+    syarat: [
+      "KTP dan KK aktif",
+      "Terdaftar sebagai petani di desa (lapor ke kepala desa)",
+      "Memiliki atau menggarap lahan pertanian",
+      "Bergabung atau bersedia bergabung ke Kelompok Tani"
+    ],
+    langkah: [
+      "Daftar ke Kelompok Tani (Poktan) di desa — tanyakan ke kepala desa",
+      "Poktan mendaftarkan anggota ke e-RDKK (Rencana Definitif Kebutuhan Kelompok)",
+      "Petani terdaftar e-RDKK berhak dapat pupuk subsidi (Urea, NPK)",
+      "Tebus pupuk subsidi di kios resmi dengan KTP",
+      "Tanyakan program lain: bantuan benih, alsintan, KUR Tani ke PPL"
+    ],
+    tip: "Pupuk subsidi 2024: Urea Rp2.250/kg, NPK Rp2.300/kg (harga kios resmi). Jika kios menjual lebih mahal, laporkan ke Dinas Pertanian Kabupaten.",
+    alert: "Beli pupuk subsidi HANYA di kios resmi ber-RDKK. Pembelian di luar jalur resmi bisa kena harga normal 3–4× lebih mahal."
+  }
+};
+
+function render(kode, pertanyaan) {
+  const d = LAYANAN[kode] || LAYANAN.bansos;
+
+  document.getElementById("title").textContent = d.icon + " " + d.judul;
+  document.getElementById("subtitle").textContent = pertanyaan ? ("Pertanyaan: " + pertanyaan) : "Panduan lengkap dari kantor desa";
+  document.getElementById("badge").textContent = d.badge;
+
+  let html = "";
+
+  // Info ringkas
+  html += `<div class="card">
+    <div class="card-title">ℹ️ Informasi Umum</div>
+    <div class="info-row"><span class="info-label">💸 Biaya</span><span class="info-val"><span class="free-tag">${d.biaya}</span></span></div>
+    <div class="info-row"><span class="info-label">⏱️ Waktu</span><span class="info-val">${d.waktu}</span></div>
+    <div class="info-row"><span class="info-label">🏛️ Tempat</span><span class="info-val">${d.kantor}</span></div>
+  </div>`;
+
+  // Syarat
+  html += `<div class="card">
+    <div class="card-title">📋 Dokumen yang Diperlukan</div>
+    <ul class="syarat-list">`;
+  d.syarat.forEach(s => { html += `<li>${s}</li>`; });
+  html += `</ul></div>`;
+
+  // Langkah
+  html += `<div class="card">
+    <div class="card-title">🪜 Langkah-langkah</div>`;
+  d.langkah.forEach((l, i) => {
+    html += `<div class="step"><div class="step-num">${i+1}</div><div class="step-text">${l}</div></div>`;
+  });
+  html += `</div>`;
+
+  // Tip
+  if (d.tip) html += `<div class="tip">💡 <strong>Tips:</strong> ${d.tip}</div>`;
+  if (d.alert) html += `<div class="alert">⚠️ <strong>Perhatian:</strong> ${d.alert}</div>`;
+
+  document.getElementById("content").innerHTML = html;
+}
+
+function onData(jsonStr) {
+  try {
+    const d = JSON.parse(jsonStr);
+    render((d.layanan || "bansos").toLowerCase(), d.pertanyaan || "");
+  } catch(e) {
+    render("bansos", "");
+  }
+}
+
+// Default preview
+render("bansos", "");
+</script>
+</body>
+</html>
