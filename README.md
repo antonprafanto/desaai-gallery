@@ -97,7 +97,7 @@ Complex query → Gemma-4-E4B (powerful, 2-6min)
 - ~10GB free storage for models
 
 ### Installation
-1. Download the APK from [Releases](../../releases)
+1. Download the APK from [Releases](https://github.com/antonprafanto/desaai-gallery/releases)
 2. Install on your Android device
 3. Download required models (Gemma-4-E2B-it recommended)
 4. Load DesaAI skills from Settings → Agent Skills
@@ -201,7 +201,7 @@ See [LICENSE.md](LICENSE.md) for full details.
 ## 📞 Contact
 
 - **Kaggle Competition:** [Gemma 4 Good Hackathon](https://www.kaggle.com/competitions/gemma-4-good-hackathon)
-- **Issues:** [GitHub Issues](../../issues)
+- **Issues:** [GitHub Issues](https://github.com/antonprafanto/desaai-gallery/issues)
 
 ---
 
