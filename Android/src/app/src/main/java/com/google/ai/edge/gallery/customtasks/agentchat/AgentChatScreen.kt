@@ -379,7 +379,7 @@ fun AgentChatScreen(
                   append("Use specialized, high-order reasoning by loading different skills or ")
                   append(
                     buildTrackableUrlAnnotatedString(
-                      url = "https://github.com/google-ai-edge/gallery/tree/main/skills",
+                      url = "https://github.com/antonprafanto/desaai-gallery/tree/main/skills/desaai",
                       linkText = "creating\u00A0your\u00A0own",
                     )
                   )
