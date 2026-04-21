@@ -4,6 +4,8 @@
 [![Gemma 4](https://img.shields.io/badge/Gemma-4-orange.svg)](https://ai.google.dev/gemma)
 [![Built with LiteRT](https://img.shields.io/badge/Built%20with-LiteRT-green.svg)](https://ai.google.dev/edge/litert)
 
+![DesaAI Cover](cover.png)
+
 > Empowering 117 million Indonesians in rural villages with on-device AI for agriculture, healthcare, education, and governance.
 
 **Submission for:** [Gemma 4 Impact Challenge 2026](https://www.kaggle.com/competitions/gemma-4-good-hackathon)  
