@@ -127,17 +127,17 @@ Complex query → Gemma-4-E4B (powerful, 2-6min)
 | Gemma-4-E2B | 20-30s | 2.5GB | 25% | Medium tasks |
 | Gemma-4-E4B | 2-6min | 3.6GB | 35% | Complex reasoning |
 
-### Fine-tuning (Unsloth)
+### Fine-tuning (Unsloth) _(Week 2 - In Progress)_
 - **Training speed:** 2× faster than standard LoRA
 - **Memory efficiency:** 50% reduction
-- **Dataset:** 500 village-specific function examples
-- **Model published:** [HuggingFace Hub](https://huggingface.co/antonprafanto/desaai-functiongemma)
+- **Dataset:** 200-500 village-specific function calling examples (in development)
+- **Model:** Will be published to [HuggingFace Hub](https://huggingface.co/antonpraf) after training completes
 
 ### LiteRT Optimization
-- **Startup time:** <5s on mid-range devices
+- **Startup time:** <5s on tested device
 - **Inference:** Fully quantized (int4/int8)
-- **Battery impact:** ~25% per hour active use (E2B model)
-- **Device support:** Tested on 2GB, 4GB, 8GB RAM devices
+- **Battery impact:** ~25% per hour active use (E2B model, estimated)
+- **Device tested:** Samsung Galaxy A73 (8GB RAM, Android)
 
 ---
 
@@ -165,11 +165,10 @@ Shows real-world scenarios: farmers checking planting calendars, health workers 
 
 ## 📚 Documentation
 
-- [Architecture Overview](docs/ARCHITECTURE.md) - Technical deep dive
-- [Skills Development Guide](gallery/skills/README.md) - How to create custom skills
-- [Fine-tuning Guide](docs/FINETUNING.md) - Unsloth training process
-- [Model Routing](docs/ROUTING.md) - Intelligent model selection algorithm
-- [Testing Notes](TESTING_NOTES_V2.md) - Device testing results
+- [Skills Development Guide](skills/README.md) - How to create custom skills
+- [Function Calling Guide](Function_Calling_Guide.md) - Function calling implementation
+- [Contributing Guide](CONTRIBUTING.md) - How to contribute
+- [Development Setup](DEVELOPMENT.md) - Build and development instructions
 
 ---
 
