@@ -3,7 +3,7 @@ To build specialized agents that go beyond our provided demos, you can fine-tune
 
 ## Clone the Repository
 ```shell
-git clone git@github.com:google-ai-edge/gallery.git
+git clone https://github.com/antonprafanto/desaai-gallery.git
 ```
 
 This will create a local copy of the repository.
