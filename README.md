@@ -15,14 +15,16 @@
 
 ## 🎯 Problem Statement
 
-Indonesia's **117 million rural residents** across 83,000 villages face critical information gaps:
-- 🌾 **30M+ farmers** lack access to agricultural advisors for crop planning, pest control, and market prices
-- 🏥 **Healthcare workers** in remote areas handle emergencies alone without diagnostic support
+Indonesia's **116.9 million rural residents** ¹ across 83,000+ villages ² face critical information gaps:
+- 🌾 **Agriculture is the primary income source for 1/3 of the population** ³ — smallholder farmers lack access to advisors for crop planning, pest control, and market prices
+- 🏥 **Healthcare workers** in remote areas handle emergencies alone without diagnostic support — rural poverty rate is 13.8% vs 8.2% urban ³
 - 📋 **Village officials** struggle with complex government forms and regulations
-- 🗣️ **Language barriers** - many are more fluent in regional languages (Javanese, Sundanese) than Indonesian
-- 📚 **15M+ students** lack quality educational content and tutoring support
+- 🗣️ **Language barriers** — Indonesia has 700+ regional languages; many are more fluent in Javanese, Sundanese, or Batak than formal Indonesian ⁴
+- 📚 **Rural students** lack quality educational content with 270,000+ primary schools spread across remote islands ²
 
-**Internet connectivity:** Only ~63% of rural households have internet access, and it's often unreliable.
+**Internet connectivity:** Only 72.8% of Indonesians are online ⁵ — rural areas significantly lower, with many relying on intermittent mobile data.
+
+> *"Three out of five Indonesians live in rural areas, and farming is their main occupation. Millions of smallholder farmers, farm workers and fishers cannot leverage opportunities due to limited access to finance, services and markets."* — IFAD ³
 
 ---
 
@@ -205,3 +207,17 @@ See [LICENSE.md](LICENSE.md) for full details.
 ---
 
 **Built with ❤️ for Indonesia's rural communities**
+
+---
+
+## 📖 References
+
+¹ **World Bank (2024).** Rural population - Indonesia. *World Development Indicators*, UN Population Division. [data.worldbank.org/indicator/SP.RUR.TOTL?locations=ID](https://data.worldbank.org/indicator/SP.RUR.TOTL?locations=ID)
+
+² **Badan Pusat Statistik / Statistics Indonesia (2023).** *Jumlah Desa/Kelurahan menurut Provinsi.* [bps.go.id](https://www.bps.go.id)
+
+³ **IFAD - International Fund for Agricultural Development (2023).** *Indonesia Country Overview.* "Three out of five Indonesians live in rural areas, and farming is their main occupation. The agriculture sector is the main source of income for one third of the population." [ifad.org/en/web/operations/w/country/indonesia](https://www.ifad.org/en/web/operations/w/country/indonesia)
+
+⁴ **Ethnologue / SIL International (2024).** *Languages of Indonesia.* Indonesia is home to 700+ living languages. [ethnologue.com/country/ID](https://www.ethnologue.com/country/ID/)
+
+⁵ **World Bank / ITU (2024).** *Individuals using the Internet - Indonesia.* 72.78% of population. [data.worldbank.org](https://data.worldbank.org/indicator/IT.NET.USER.ZS?locations=ID)
