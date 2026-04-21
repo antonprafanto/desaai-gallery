@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator UMKM</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #fff8f0; color: #2d1a00; font-size: 14px; }
+  .container { max-width: 480px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 17px; color: #e65100; margin-bottom: 4px; }
+  .subtitle { color: #bf360c; font-size: 12px; margin-bottom: 14px; }
+  .card { background: #fff; border-radius: 12px; padding: 14px; margin-bottom: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+  .card-title { font-weight: 700; color: #e65100; margin-bottom: 10px; font-size: 14px;
+    border-bottom: 2px solid #ffe0b2; padding-bottom: 6px; }
+  .row { display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px; }
+  .label { color: #666; font-size: 12px; }
+  .value { font-weight: 600; color: #333; font-size: 13px; }
+  .highlight { background: #fff3e0; border-radius: 8px; padding: 12px; margin: 8px 0; }
+  .big-num { font-size: 22px; font-weight: 800; color: #e65100; }
+  .big-label { font-size: 11px; color: #999; margin-top: 2px; }
+  .profit-box { background: #e8f5e9; border-radius: 8px; padding: 12px;
+    border-left: 4px solid #43a047; margin: 8px 0; }
+  .profit-num { font-size: 20px; font-weight: 800; color: #2e7d32; }
+  .warn-box { background: #fff3e0; border-left: 4px solid #ff9800; border-radius: 4px;
+    padding: 10px 12px; font-size: 12px; color: #e65100; line-height: 1.5; }
+  .tip-box { background: #e3f2fd; border-left: 4px solid #1976d2; border-radius: 4px;
+    padding: 10px 12px; font-size: 12px; color: #0d47a1; line-height: 1.5; margin-top: 8px; }
+  .divider { height: 1px; background: #f0e0d0; margin: 8px 0; }
+  .kur-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+  .kur-icon { font-size: 20px; min-width: 28px; }
+  .kur-text h3 { font-size: 13px; color: #e65100; margin-bottom: 3px; }
+  .kur-text p { font-size: 12px; color: #555; line-height: 1.4; }
+  .badge { display: inline-block; background: #ffe0b2; color: #e65100; border-radius: 20px;
+    padding: 3px 10px; font-size: 11px; font-weight: 700; margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { background: #fff3e0; color: #e65100; padding: 7px 8px; text-align: left; }
+  td { padding: 7px 8px; border-bottom: 1px solid #f5f5f5; color: #333; }
+  tr:last-child td { border-bottom: none; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1 id="title">💼 Kalkulator UMKM</h1>
+  <p class="subtitle" id="subtitle">Hitung HPP & Harga Jual Produk Anda</p>
+
+  <div id="content"></div>
+</div>
+
+<script>
+function fmt(n) {
+  return "Rp " + Math.round(n).toLocaleString("id-ID");
+}
+
+function renderHPP(d) {
+  const bahan   = d.bahan   || 0;
+  const tenaga  = d.tenaga  || 0;
+  const overhead = d.overhead || 0;
+  const jumlah  = d.jumlah  || 1;
+  const margin  = d.margin  || 30;
+  const produk  = d.produk  || "Produk";
+
+  const totalBiaya = bahan + tenaga + overhead;
+  const hppPerUnit = totalBiaya / jumlah;
+  const hargaJual  = hppPerUnit * (1 + margin / 100);
+  const keuntungan = hargaJual - hppPerUnit;
+  const totalProfit = keuntungan * jumlah;
+
+  // Margin saran
+  let saranMargin = "";
+  if (margin < 20) saranMargin = "⚠️ Margin terlalu kecil — biasanya UMKM butuh min. 20–30%";
+  else if (margin > 60) saranMargin = "⚠️ Margin sangat tinggi — pastikan harga masih kompetitif di pasaran";
+  else saranMargin = "✅ Margin sehat untuk usaha UMKM";
+
+  let html = `
+    <div class="card">
+      <div class="card-title">📊 Rincian Biaya Produksi — ${produk}</div>
+      <div class="row"><span class="label">🌾 Bahan baku</span><span class="value">${fmt(bahan)}</span></div>
+      <div class="row"><span class="label">👷 Tenaga kerja</span><span class="value">${fmt(tenaga)}</span></div>
+      <div class="row"><span class="label">🔧 Overhead/operasional</span><span class="value">${fmt(overhead)}</span></div>
+      <div class="divider"></div>
+      <div class="row"><span class="label"><strong>Total biaya</strong></span><span class="value"><strong>${fmt(totalBiaya)}</strong></span></div>
+      <div class="row"><span class="label">📦 Jumlah produksi</span><span class="value">${jumlah} unit</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💰 Hasil Perhitungan</div>
+      <div class="highlight">
+        <div class="big-num">${fmt(hppPerUnit)}</div>
+        <div class="big-label">HPP per unit (Harga Pokok Produksi)</div>
+      </div>
+      <div class="row"><span class="label">🎯 Target margin</span><span class="value">${margin}%</span></div>
+      <div class="row"><span class="label">🏷️ Harga jual per unit</span><span class="value" style="color:#e65100;font-size:15px"><strong>${fmt(hargaJual)}</strong></span></div>
+      <div class="divider"></div>
+      <div class="profit-box">
+        <div class="profit-num">${fmt(totalProfit)}</div>
+        <div style="font-size:11px;color:#555;margin-top:2px">Potensi keuntungan total jika ${jumlah} unit terjual</div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#666">${saranMargin}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📋 Perbandingan Harga Jual</div>
+      <table>
+        <tr><th>Margin</th><th>Harga Jual/unit</th><th>Untung/unit</th></tr>
+        <tr><td>20%</td><td>${fmt(hppPerUnit * 1.20)}</td><td>${fmt(hppPerUnit * 0.20)}</td></tr>
+        <tr><td>30%</td><td>${fmt(hppPerUnit * 1.30)}</td><td>${fmt(hppPerUnit * 0.30)}</td></tr>
+        <tr><td>40%</td><td>${fmt(hppPerUnit * 1.40)}</td><td>${fmt(hppPerUnit * 0.40)}</td></tr>
+        <tr><td>50%</td><td>${fmt(hppPerUnit * 1.50)}</td><td>${fmt(hppPerUnit * 0.50)}</td></tr>
+      </table>
+    </div>
+
+    <div class="tip-box">
+      💡 <strong>Tips:</strong> Riset harga kompetitor di pasar terdekat sebelum menentukan harga jual. Jika harga Anda lebih tinggi, tonjolkan keunggulan produk (rasa, kemasan, kesegaran).
+    </div>
+
+    <div class="warn-box" style="margin-top:8px">
+      ⚠️ Kalkulator ini estimasi. Biaya aktual bisa berbeda. Catat semua pengeluaran nyata setiap hari untuk pembukuan yang akurat.
+    </div>`;
+
+  document.getElementById("content").innerHTML = html;
+}
+
+function renderKUR() {
+  let html = `
+    <div class="badge">Info KUR 2024–2025</div>
+    <div class="card">
+      <div class="card-title">🏦 Apa itu KUR?</div>
+      <p style="font-size:13px;line-height:1.6;color:#444">
+        KUR (Kredit Usaha Rakyat) adalah pinjaman modal usaha berbunga <strong>rendah</strong> dari pemerintah, 
+        disalurkan lewat bank. Khusus untuk UMKM yang belum bisa akses kredit biasa.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💰 Jenis KUR & Plafon</div>
+      <table>
+        <tr><th>Jenis</th><th>Plafon</th><th>Bunga/thn</th></tr>
+        <tr><td>KUR Mikro</td><td>Maks Rp 100 juta</td><td><strong>6%</strong></td></tr>
+        <tr><td>KUR Kecil</td><td>Rp 100 juta – Rp 500 juta</td><td><strong>6%</strong></td></tr>
+        <tr><td>KUR Super Mikro</td><td>Maks Rp 10 juta</td><td><strong>3%</strong></td></tr>
+        <tr><td>KUR Pertanian</td><td>Maks Rp 100 juta</td><td><strong>6%</strong></td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📋 Syarat Umum KUR</div>
+      <div class="kur-item"><div class="kur-icon">🪪</div><div class="kur-text"><h3>KTP & KK</h3><p>KTP pemohon dan Kartu Keluarga aktif</p></div></div>
+      <div class="kur-item"><div class="kur-icon">💍</div><div class="kur-text"><h3>Surat Nikah (jika menikah)</h3><p>Diperlukan untuk tanda tangan pasangan sebagai jaminan moral</p></div></div>
+      <div class="kur-item"><div class="kur-icon">🏠</div><div class="kur-text"><h3>Bukti Tempat Usaha</h3><p>Foto usaha, nota pembelian bahan, atau bukti transaksi 3 bulan terakhir</p></div></div>
+      <div class="kur-item"><div class="kur-icon">📄</div><div class="kur-text"><h3>NIB (Nomor Induk Berusaha)</h3><p>Daftar gratis di oss.go.id — ini sangat mempermudah approval KUR</p></div></div>
+      <div class="kur-item"><div class="kur-icon">✅</div><div class="kur-text"><h3>Belum pernah dapat KUR</h3><p>Atau sudah lunas KUR sebelumnya. Cek ke bank langsung.</p></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🪜 Cara Apply KUR</div>
+      <div class="kur-item"><div class="kur-icon">1️⃣</div><div class="kur-text"><h3>Siapkan semua dokumen</h3><p>KTP, KK, surat nikah, NIB, foto usaha, NPWP (opsional)</p></div></div>
+      <div class="kur-item"><div class="kur-icon">2️⃣</div><div class="kur-text"><h3>Datang ke bank penyalur KUR</h3><p>BRI (paling umum di desa), BNI, Mandiri, BSI, atau bank daerah</p></div></div>
+      <div class="kur-item"><div class="kur-icon">3️⃣</div><div class="kur-text"><h3>Isi formulir & wawancara</h3><p>Ceritakan usaha Anda dengan jelas: omset, lama usaha, rencana penggunaan dana</p></div></div>
+      <div class="kur-item"><div class="kur-icon">4️⃣</div><div class="kur-text"><h3>Tunggu survei (3–7 hari)</h3><p>Petugas bank mungkin datang ke tempat usaha Anda untuk verifikasi</p></div></div>
+      <div class="kur-item"><div class="kur-icon">5️⃣</div><div class="kur-text"><h3>Pencairan dana</h3><p>Jika disetujui, dana langsung masuk rekening. Angsur tepat waktu!</p></div></div>
+    </div>
+
+    <div class="warn-box">
+      ⚠️ <strong>Waspada penipuan!</strong> KUR tidak dipungut biaya apapun di luar angsuran resmi. Jangan bayar "uang pelicin" ke siapapun — itu penipuan!
+    </div>
+    <div class="tip-box" style="margin-top:8px">
+      💡 BRI punya program <strong>BRI Link</strong> di desa — tanyakan ke agen BRI Link terdekat untuk info KUR Mikro tanpa harus ke kota.
+    </div>`;
+
+  document.getElementById("title").textContent = "🏦 Info KUR UMKM";
+  document.getElementById("subtitle").textContent = "Kredit Usaha Rakyat — Pinjaman Modal Berbunga Rendah";
+  document.getElementById("content").innerHTML = html;
+}
+
+function onData(jsonStr) {
+  try {
+    const d = JSON.parse(jsonStr);
+    if ((d.mode || "").toLowerCase() === "kur") {
+      renderKUR();
+    } else {
+      renderHPP(d);
+    }
+  } catch(e) {
+    renderKUR();
+  }
+}
+
+// Default preview
+renderKUR();
+</script>
+</body>
+</html>

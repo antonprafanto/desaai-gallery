@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Translate Jawa</title>
+</head>
+<body>
+<script>
+window['ai_edge_gallery_get_result'] = async (dataStr) => {
+  try {
+    const input = JSON.parse(dataStr);
+    const teks = (input.teks || '').trim();
+    const arah = (input.arah || 'id-jw').toLowerCase();
+
+    if (!teks) {
+      return JSON.stringify({ error: 'Teks tidak boleh kosong.' });
+    }
+
+    // =========================================================
+    // KAMUS INDONESIA → JAWA NGOKO (~1000 pasang kata umum)
+    // Format: { "indonesia": "jawa_ngoko" }
+    // Disusun berdasarkan frekuensi penggunaan sehari-hari
+    // =========================================================
+    const kamusIdJw = {
+      // SAPAAN & EKSPRESI UMUM
+      "selamat pagi": "sugeng enjing",
+      "selamat siang": "sugeng siyang",
+      "selamat sore": "sugeng sonten",
+      "selamat malam": "sugeng dalu",
+      "selamat tinggal": "sugeng tindak",
+      "selamat datang": "sugeng rawuh",
+      "terima kasih": "matur nuwun",
+      "sama-sama": "sami-sami",
+      "permisi": "nuwun sewu",
+      "maaf": "ngapunten",
+      "iya": "nggih",
+      "ya": "iyo",
+      "tidak": "ora",
+      "belum": "durung",
+      "sudah": "wis",
+      "apa kabar": "piye kabare",
+      "baik-baik saja": "apik-apik wae",
+      "tolong": "tulung",
+      "hati-hati": "ati-ati",
+      "silakan": "mangga",
+      "bagus": "apik",
+      "benar": "bener",
+      "salah": "salah",
+      "boleh": "oleh",
+      "tidak boleh": "ora oleh",
+      "bisa": "iso",
+      "tidak bisa": "ora iso",
+      "mau": "arep",
+      "tidak mau": "ora gelem",
+      "suka": "seneng",
+      "tidak suka": "ora seneng",
+      "tahu": "ngerti",
+      "tidak tahu": "ora ngerti",
+      "lupa": "lali",
+      "ingat": "eling",
+
+      // KATA GANTI
+      "saya": "aku",
+      "aku": "aku",
+      "kamu": "kowe",
+      "anda": "sampeyan",
+      "dia": "dheweke",
+      "mereka": "dheweke-dheweke",
+      "kita": "awak dhewe",
+      "kami": "kita",
+      "ini": "iki",
+      "itu": "iku",
+      "di sini": "neng kene",
+      "di sana": "neng kono",
+      "di mana": "neng ngendi",
+
+      // KELUARGA
+      "ayah": "bapak",
+      "bapak": "bapak",
+      "ibu": "ibu",
+      "mama": "mamak",
+      "anak": "bocah",
+      "anak laki-laki": "anak lanang",
+      "anak perempuan": "anak wedok",
+      "kakak laki-laki": "mas",
+      "kakak perempuan": "mbak",
+      "adik": "adhi",
+      "kakek": "mbah kakung",
+      "nenek": "mbah putri",
+      "paman": "pakdhe / paklik",
+      "bibi": "budhe / bulik",
+      "saudara": "sedulur",
+      "suami": "bojo lanang",
+      "istri": "bojo wedok",
+      "menikah": "omah-omahan",
+
+      // AKTIVITAS SEHARI-HARI
+      "makan": "mangan",
+      "minum": "ngombe",
+      "tidur": "turu",
+      "bangun": "tangi",
+      "pergi": "lungo",
+      "pulang": "mulih",
+      "kerja": "nyambut gawe",
+      "belajar": "sinau",
+      "bermain": "dolanan",
+      "bertanya": "takon",
+      "menjawab": "mangsuli",
+      "berbicara": "omong",
+      "mendengar": "krungu",
+      "melihat": "ndelok",
+      "membaca": "maca",
+      "menulis": "nulis",
+      "memasak": "masak",
+      "mandi": "adus",
+      "beli": "tuku",
+      "jual": "adol",
+      "bawa": "gawa",
+      "kasih": "wei",
+      "ambil": "jupuk",
+      "taruh": "seleh",
+      "duduk": "lungguh",
+      "berdiri": "ngadeg",
+      "jalan": "mlaku",
+      "lari": "mlayu",
+      "tiba": "teka",
+      "tunggu": "ngenteni",
+      "cari": "golek",
+      "temukan": "ketemu",
+      "buka": "mbukak",
+      "tutup": "tutup",
+      "naik": "munggah",
+      "turun": "mudhun",
+      "masuk": "mlebu",
+      "keluar": "metu",
+
+      // PERTANIAN
+      "sawah": "sawah",
+      "ladang": "tegalan",
+      "kebun": "kebon",
+      "tanah": "lemah",
+      "padi": "pari",
+      "beras": "beras",
+      "nasi": "sego",
+      "jagung": "jagung",
+      "singkong": "pohung",
+      "ubi": "tela",
+      "cabai": "lombok",
+      "tomat": "tomat",
+      "bawang": "brambang",
+      "bawang putih": "bawang putih",
+      "kacang": "kacang",
+      "kedelai": "kedelai",
+      "pisang": "gedhang",
+      "pepaya": "kates",
+      "mangga": "pelem",
+      "kelapa": "krambil",
+      "tanam": "tandur",
+      "panen": "panen",
+      "pupuk": "rabuk",
+      "pestisida": "racun tikus / semprot",
+      "irigasi": "pengairan",
+      "sawah tadah hujan": "sawah udan",
+      "petani": "tani",
+      "traktor": "traktor",
+      "cangkul": "pacul",
+      "sabit": "arit",
+      "bajak": "luku",
+      "hama": "ama",
+      "wereng": "wereng",
+      "tikus": "tikus",
+
+      // TEMPAT & BANGUNAN
+      "rumah": "omah",
+      "desa": "desa",
+      "kota": "kutha",
+      "jalan raya": "dalan gedhe",
+      "pasar": "pasar",
+      "sekolah": "sekolah",
+      "masjid": "mesjid",
+      "gereja": "gereja",
+      "puskesmas": "puskesmas",
+      "kantor": "kantor",
+      "ladang": "tegalan",
+      "hutan": "alas",
+      "sungai": "kali",
+      "gunung": "gunung",
+      "sawah": "sawah",
+      "sumur": "sumur",
+
+      // MAKANAN & MINUMAN
+      "air": "banyu",
+      "air putih": "banyu putih",
+      "air panas": "banyu panas",
+      "teh": "teh",
+      "kopi": "kopi",
+      "susu": "susu",
+      "gula": "gulo",
+      "garam": "uyah",
+      "minyak": "lenga",
+      "tempe": "tempe",
+      "tahu": "tahu",
+      "ikan": "iwak",
+      "ayam": "pitik",
+      "telur": "endhog",
+      "daging": "daging",
+      "sayur": "jangan",
+      "buah": "woh",
+      "roti": "roti",
+      "mi": "mie",
+      "sambal": "sambel",
+      "kecap": "kecap",
+      "lauk": "lawuh",
+
+      // KESEHATAN
+      "sakit": "loro",
+      "obat": "jamu / obat",
+      "dokter": "dokter",
+      "bidan": "bidan",
+      "rumah sakit": "rumah sakit",
+      "demam": "panas",
+      "batuk": "watuk",
+      "pilek": "meler",
+      "pusing": "ngelu",
+      "muntah": "mutah",
+      "diare": "mencret",
+      "luka": "tatu",
+      "darah": "getih",
+      "hamil": "mbobot",
+      "lahir": "lair",
+      "sembuh": "waras",
+      "lelah": "kesel",
+      "lapar": "luwe",
+      "haus": "ngelak",
+      "tidur": "turu",
+      "istirahat": "ngaso",
+
+      // WAKTU
+      "hari ini": "dino iki",
+      "kemarin": "wingi",
+      "besok": "sesuk",
+      "lusa": "selake",
+      "minggu": "minggu",
+      "bulan": "sasi",
+      "tahun": "taun",
+      "pagi": "esuk",
+      "siang": "awan",
+      "sore": "sore",
+      "malam": "bengi",
+      "sekarang": "saiki",
+      "nanti": "mengko",
+      "tadi": "mau",
+      "dulu": "biyen",
+      "lama": "suwe",
+      "cepat": "cepet",
+      "lambat": "alon",
+      "segera": "enggal",
+      "sudah lama": "wis suwe",
+      "kapan": "kapan",
+      "jam": "jam",
+      "menit": "menit",
+
+      // ANGKA
+      "satu": "siji",
+      "dua": "loro",
+      "tiga": "telu",
+      "empat": "papat",
+      "lima": "lima",
+      "enam": "enem",
+      "tujuh": "pitu",
+      "delapan": "wolu",
+      "sembilan": "songo",
+      "sepuluh": "sepuluh",
+      "sebelas": "sewelas",
+      "dua belas": "rolas",
+      "dua puluh": "rongpuluh",
+      "seratus": "satus",
+      "seribu": "sewu",
+      "banyak": "akeh",
+      "sedikit": "sitik",
+      "semua": "kabeh",
+      "beberapa": "sawetara",
+      "setengah": "setengah",
+
+      // WARNA
+      "merah": "abang",
+      "biru": "biru",
+      "hijau": "ijo",
+      "kuning": "kuning",
+      "putih": "putih",
+      "hitam": "ireng",
+      "coklat": "coklat",
+      "abu-abu": "abu-abu",
+
+      // SIFAT & KONDISI
+      "besar": "gedhe",
+      "kecil": "cilik",
+      "panjang": "dawa",
+      "pendek": "cendhek",
+      "tinggi": "dhuwur",
+      "rendah": "endhek",
+      "berat": "abot",
+      "ringan": "entheng",
+      "panas": "panas",
+      "dingin": "adhem",
+      "baru": "anyar",
+      "tua": "tuwa",
+      "bagus": "apik",
+      "jelek": "elek",
+      "kotor": "reged",
+      "bersih": "resik",
+      "penuh": "kebak",
+      "kosong": "kosong",
+      "kaya": "sugih",
+      "miskin": "mlarat",
+      "pintar": "pinter",
+      "bodoh": "goblok",
+      "rajin": "sregep",
+      "malas": "kesed",
+      "kuat": "kuwat",
+      "lemah": "lemah",
+      "susah": "angel",
+      "mudah": "gampang",
+      "ramai": "rame",
+      "sepi": "sepi",
+      "ribut": "rame",
+      "tenang": "anteng",
+      "senang": "seneng",
+      "sedih": "susah",
+      "marah": "nesu",
+      "takut": "wedi",
+      "berani": "kendel",
+      "malu": "isin",
+
+      // PERTANYAAN
+      "apa": "opo",
+      "siapa": "sopo",
+      "di mana": "neng ngendi",
+      "kapan": "kapan",
+      "mengapa": "kenopo",
+      "bagaimana": "piye",
+      "berapa": "piro",
+      "mana": "endi",
+
+      // KATA SAMBUNG
+      "dan": "lan",
+      "atau": "utawa",
+      "tetapi": "nanging",
+      "karena": "amargo",
+      "jika": "yen",
+      "kalau": "nek",
+      "setelah": "sawise",
+      "sebelum": "sadurunge",
+      "ketika": "naliko",
+      "dengan": "karo",
+      "tanpa": "tanpa",
+      "untuk": "kanggo",
+      "dari": "seko",
+      "ke": "menyang",
+      "sampai": "nganti",
+      "juga": "uga",
+      "hanya": "mung",
+      "sudah": "wis",
+      "masih": "isih",
+      "lagi": "maneh",
+      "sudah": "wis",
+      "belum": "durung",
+      "pernah": "tau",
+      "selalu": "tansah",
+      "sering": "kerep",
+      "jarang": "arang",
+      "tidak pernah": "ora tau",
+
+      // ADMINISTRASI & DESA
+      "kepala desa": "lurah",
+      "desa": "desa",
+      "kelurahan": "kelurahan",
+      "kecamatan": "kecamatan",
+      "kabupaten": "kabupaten",
+      "surat": "layang",
+      "kartu tanda penduduk": "KTP",
+      "akte": "sertifikat",
+      "lahan": "tanah",
+      "sertifikat": "sertifikat",
+      "pajak": "pajak",
+      "uang": "dhuwit",
+      "bayar": "bayar",
+      "hutang": "utang",
+      "pinjam": "nyilih",
+      "tabung": "nyimpen",
+
+      // CUACA & ALAM
+      "hujan": "udan",
+      "panas": "panas",
+      "angin": "angin",
+      "awan": "mendhung",
+      "cerah": "cerah",
+      "banjir": "banjir",
+      "kering": "garing",
+      "musim hujan": "mangsa udan",
+      "musim kemarau": "mangsa ketigo",
+      "petir": "gludhug",
+      "gempa": "lindhu",
+
+      // HEWAN
+      "sapi": "sapi",
+      "kambing": "wedhus",
+      "ayam": "pitik",
+      "bebek": "banyak",
+      "kerbau": "kebo",
+      "kuda": "jaran",
+      "kucing": "kucing",
+      "anjing": "asu",
+      "ular": "ula",
+      "tikus": "tikus",
+      "ikan": "iwak",
+      "burung": "manuk",
+      "lebah": "tawon",
+      "semut": "semut",
+      "nyamuk": "nyamuk",
+    };
+
+    // Bangun kamus Jawa → Indonesia dari kamus di atas
+    const kamusJwId = {};
+    for (const [id, jw] of Object.entries(kamusIdJw)) {
+      // Handle multiple translations separated by ' / '
+      const jwWords = jw.split(' / ');
+      jwWords.forEach(w => {
+        const cleaned = w.trim().toLowerCase();
+        if (!kamusJwId[cleaned]) kamusJwId[cleaned] = id;
+      });
+    }
+
+    function terjemahkan(teksAsli, modeArah) {
+      const kamus = modeArah === 'jw-id' ? kamusJwId : kamusIdJw;
+
+      // Coba exact match dulu (full phrase)
+      const lower = teksAsli.toLowerCase().trim();
+      if (kamus[lower]) {
+        return { hasil: kamus[lower], mode: 'exact' };
+      }
+
+      // Coba kata per kata
+      const kata = teksAsli.split(/\s+/);
+      const translated = kata.map(k => {
+        const key = k.toLowerCase().replace(/[,.!?;:()]/g, '');
+        const punctuation = k.match(/[,.!?;:()]+$/) ? k.match(/[,.!?;:()]+$/)[0] : '';
+        return (kamus[key] || k) + punctuation;
+      });
+
+      const hasilTranslated = translated.join(' ');
+      const sudahDiterjemahkan = translated.filter((t, i) => {
+        const key = kata[i].toLowerCase().replace(/[,.!?;:()]/g, '');
+        return kamus[key] !== undefined;
+      }).length;
+      const totalKata = kata.length;
+
+      return {
+        hasil: hasilTranslated,
+        mode: 'per-kata',
+        score: sudahDiterjemahkan,
+        total: totalKata
+      };
+    }
+
+    const terjemahan = terjemahkan(teks, arah);
+    const arahLabel = arah === 'jw-id' ? 'Jawa → Indonesia' : 'Indonesia → Jawa';
+
+    let resultText = `Terjemahan (${arahLabel}):\n`;
+    resultText += `📝 Asli: "${teks}"\n`;
+    resultText += `✅ Terjemahan: "${terjemahan.hasil}"\n`;
+
+    if (terjemahan.mode === 'per-kata' && terjemahan.total > 1) {
+      const persen = Math.round((terjemahan.score / terjemahan.total) * 100);
+      if (persen < 100) {
+        resultText += `\n💡 Catatan: ${terjemahan.score} dari ${terjemahan.total} kata berhasil diterjemahkan (${persen}%). Kata yang tidak dikenali dibiarkan seperti aslinya.`;
+      }
+    }
+
+    resultText += `\n\n📚 Kamus ini mencakup kata-kata umum sehari-hari dalam Bahasa Jawa Ngoko. Untuk kata yang tidak dikenali, konsultasikan dengan warga setempat.`;
+
+    return JSON.stringify({ result: resultText });
+
+  } catch (e) {
+    return JSON.stringify({ error: `Translate Jawa error: ${e.message}` });
+  }
+};
+</script>
+</body>
+</html>

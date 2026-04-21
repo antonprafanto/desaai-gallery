@@ -1,87 +1,205 @@
-# Google AI Edge Gallery ✨
+# 🌾 DesaAI - Smart Village Assistant for Rural Indonesia
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/google-ai-edge/gallery)](https://github.com/google-ai-edge/gallery/releases)
+[![License: Dual](https://img.shields.io/badge/License-Apache%202.0%20%2F%20CC--BY%204.0-blue.svg)](LICENSE.md)
+[![Gemma 4](https://img.shields.io/badge/Gemma-4-orange.svg)](https://ai.google.dev/gemma)
+[![Built with LiteRT](https://img.shields.io/badge/Built%20with-LiteRT-green.svg)](https://ai.google.dev/edge/litert)
 
-**Explore, Experience, and Evaluate the Future of On-Device Generative AI with Google AI Edge.**
+> Empowering 117 million Indonesians in rural villages with on-device AI for agriculture, healthcare, education, and governance.
 
-AI Edge Gallery is the premier destination for running the world's most powerful open-source Large Language Models (LLMs) on your mobile device. Experience high-performance Generative AI directly on your hardware—fully offline, private, and lightning-fast.
+**Submission for:** [Gemma 4 Impact Challenge 2026](https://www.kaggle.com/competitions/gemma-4-good-hackathon)  
+**Built on:** [Google AI Edge Gallery](https://github.com/google-ai-edge/gallery)
 
-**Now Featuring: Gemma 4**
+---
 
-The latest version brings official support for the newly released Gemma 4 family. As the centerpiece of this release, Gemma 4 allows you to test the cutting edge of on-device AI. Experience advanced reasoning, logic, and creative capabilities without ever sending your data to a server.
+## 🎯 Problem Statement
 
+Indonesia's **117 million rural residents** across 83,000 villages face critical information gaps:
+- 🌾 **30M+ farmers** lack access to agricultural advisors for crop planning, pest control, and market prices
+- 🏥 **Healthcare workers** in remote areas handle emergencies alone without diagnostic support
+- 📋 **Village officials** struggle with complex government forms and regulations
+- 🗣️ **Language barriers** - many are more fluent in regional languages (Javanese, Sundanese) than Indonesian
+- 📚 **15M+ students** lack quality educational content and tutoring support
 
-| **Install the app today from Google Play** | **Install the app today from App Store** |
-| :--- | :--- |
-| <a href='https://play.google.com/store/apps/details?id=com.google.ai.edge.gallery'><img alt='Get it on Google Play' height="120" src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a> | <a href="https://apps.apple.com/us/app/google-ai-edge-gallery/id6749645337?itscg=30200&itsct=apps_box_badge&mttnsubad=6749645337" style="display: inline-block;"> <img src="https://toolbox.marketingtools.apple.com/api/v2/badges/download-on-the-app-store/black/en-us?releaseDate=1771977600" alt="Download on the App Store" style="width: 246px; height: 90px; vertical-align: middle; object-fit: contain;" /></a> |
+**Internet connectivity:** Only ~63% of rural households have internet access, and it's often unreliable.
 
-For users without Google Play access, install the apk from the [**latest release**](https://github.com/google-ai-edge/gallery/releases/latest/)
+---
 
+## 💡 Solution: DesaAI
 
-## App Preview
+An **offline-first AI assistant** running 100% on-device using Gemma 4 models, with 9 custom skills tailored for rural Indonesian communities.
 
-<img width="480" alt="01" src="https://github.com/user-attachments/assets/a809ad78-aef4-4169-91ee-de7213cbb3bd" />
-<img width="480" alt="02" src="https://github.com/user-attachments/assets/1effd10d-f45a-4f7b-9435-f50f1bdd36b6" />
-<img width="480" alt="03" src="https://github.com/user-attachments/assets/e5089e41-2c18-4fbe-9011-ebe9e5a02044" />
-<img width="480" alt="04" src="https://github.com/user-attachments/assets/0f39d3ed-7403-4606-a7c6-b2c7e51ba6c1" />
-<img width="480" alt="05" src="https://github.com/user-attachments/assets/8c229e96-b598-4735-9f60-e96907e1d5d5" />
-<img width="480" alt="06" src="https://github.com/user-attachments/assets/ac9fb77b-81de-4197-9ed3-f6fe58290b3e" />
-<img width="480" alt="07" src="https://github.com/user-attachments/assets/bc86ba07-2eaf-49b1-980f-8a87a85c596f" />
-<img width="480" alt="08" src="https://github.com/user-attachments/assets/061564ed-030f-4630-810b-13a7863fce4c" />
+### Key Features
+- ✅ **100% Offline** - No internet required after model download
+- ✅ **Privacy-First** - All data stays on device
+- ✅ **Low-end Device Support** - Optimized for 2GB+ RAM devices via LiteRT
+- ✅ **Multilingual** - Indonesian + Javanese language support
+- ✅ **9 Custom Agent Skills** - Agriculture, health, education, governance, UMKM
+- ✅ **Intelligent Model Routing** - Auto-selects optimal model (270M/E2B/E4B) based on query complexity
 
-## ✨ Core Features
+---
 
-* **Agent Skills**: Transform your LLM from a conversationalist into a proactive assistant. Use the Agent Skills tile to augment model capabilities with tools like Wikipedia for fact-grounding, interactive maps, and rich visual summary cards. You can even load modular skills from a URL or browse community contributions on GitHub Discussions.
+## 🛠️ Technical Architecture
 
-* **AI Chat with Thinking Mode**: Engage in fluid, multi-turn conversations and toggle the new Thinking Mode to peek "under the hood." This feature allows you to see the model’s step-by-step reasoning process, which is perfect for understanding complex problem-solving. Note: Thinking Mode currently works with supported models, starting with the Gemma 4 family.
+### Models Used
+- **Gemma-4-E2B-it** (2.5GB) - Medium complexity queries, Agent Skills
+- **Gemma-4-E4B-it** (3.6GB) - Complex reasoning tasks
+- **FunctionGemma-270M** - Fine-tuned for village-specific function calling (Unsloth optimization)
 
-* **Ask Image**: Use multimodal power to identify objects, solve visual puzzles, or get detailed descriptions using your device’s camera or photo gallery.
+### Technology Stack
+- **On-device Runtime:** LiteRT (TensorFlow Lite) + MediaPipe
+- **Fine-tuning:** Unsloth (2× faster training, 50% less memory)
+- **Platform:** Android (Kotlin), iOS support via Gallery base
+- **Models:** Gemma 4 family (E2B, E4B, 270M)
 
-* **Audio Scribe**: Transcribe and translate voice recordings into text in real-time using high-efficiency on-device language models.
+### Intelligent Model Routing (Cactus Prize)
+Automatically routes queries to the optimal model:
+```
+Simple query → FunctionGemma 270M (fast, 3.9s avg)
+Medium query → Gemma-4-E2B (balanced, 20-30s)
+Complex query → Gemma-4-E4B (powerful, 2-6min)
+```
 
-* **Prompt Lab**: A dedicated workspace to test different prompts and single-turn use cases with granular control over model parameters like temperature and top-k.
+---
 
-* **Mobile Actions**: Unlock offline device controls and automated tasks powered entirely by a finetune of FuntionGemma 270m.
+## 🌟 DesaAI Skills
 
-* **Tiny Garden**: A fun, experimental mini-game that uses natural language to plant and harvest a virtual garden using a finetune of FunctionGemma 270m.
+### 🌾 Agriculture (4 skills)
+1. **asisten-pertanian** - AI agricultural advisor (crop planning, pest control)
+2. **kalkulator-pupuk** - NPK fertilizer dosage calculator
+3. **harga-pasar** - Interactive market price charts for commodities
+4. **jadwal-tanam** - Visual planting calendar by crop & region
 
-* **Model Management & Benchmark**: Gallery is a flexible sandbox for a wide variety of open-source models. Easily download models from the list or load your own custom models. Manage your model library effortlessly and run benchmark tests to understand exactly how each model performs on your specific hardware.
+### 🏥 Healthcare (1 skill)
+5. **p3k-darurat** - Step-by-step first aid guidance for rural health workers
 
-* **100% On-Device Privacy**: All model inferences happen directly on your device hardware. No internet is required, ensuring total privacy for your prompts, images, and sensitive data.
+### 🏛️ Village Administration (1 skill)
+6. **layanan-desa** - Guide for government forms, social assistance programs (KTP, BPJS, PKH, KUR)
 
-## 🏁 Get Started in Minutes!
+### 💰 UMKM Business (1 skill)
+7. **kalkulator-umkm** - Calculate production costs (HPP), selling price, profit + KUR loan info
 
-1. **Check OS Requirement**: Android 12 and up, and iOS 17 and up.
-2.  **Download the App:**
-    - Install the app from [Google Play](https://play.google.com/store/apps/details?id=com.google.ai.edge.gallery) or [App Store](https://apps.apple.com/us/app/google-ai-edge-gallery/id6749645337).
-    - For users without Google Play access: install the apk from the [**latest release**](https://github.com/google-ai-edge/gallery/releases/latest/)
-3.  **Install & Explore:** For detailed installation instructions (including for corporate devices) and a full user guide, head over to our [**Project Wiki**](https://github.com/google-ai-edge/gallery/wiki)!
+### 📚 Education (1 skill)
+8. **tutor-anak-sd** - Elementary school tutor (Math, Science, Bahasa) with village-context examples
 
-## 🛠️ Technology Highlights
+### 🗣️ Language (1 skill)
+9. **translate-jawa** - Indonesian ↔ Javanese translation (1000+ word offline dictionary)
 
-*   **Google AI Edge:** Core APIs and tools for on-device ML.
-*   **LiteRT:** Lightweight runtime for optimized model execution.
-*   **Hugging Face Integration:** For model discovery and download.
+---
 
-## ⌨️ Development
+## 🚀 Quick Start
 
-Check out the [development notes](DEVELOPMENT.md) for instructions about how to build the app locally.
+### Prerequisites
+- Android device with 8GB+ RAM (recommended) or 2GB+ (minimum)
+- ~10GB free storage for models
 
-## 🤝 Feedback
+### Installation
+1. Download the APK from [Releases](../../releases)
+2. Install on your Android device
+3. Download required models (Gemma-4-E2B-it recommended)
+4. Load DesaAI skills from Settings → Agent Skills
 
-This is an **experimental Beta release**, and your input is crucial!
+### Usage Examples
 
-*   🐞 **Found a bug?** [Report it here!](https://github.com/google-ai-edge/gallery/issues/new?assignees=&labels=bug&template=bug_report.md&title=%5BBUG%5D)
-*   💡 **Have an idea?** [Suggest a feature!](https://github.com/google-ai-edge/gallery/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=%5BFEATURE%5D)
+**For farmers:**
+> "Kapan waktu tanam padi yang bagus?" → Launches jadwal-tanam calendar
+
+**For health workers:**
+> "Pasien keracunan makanan, apa yang harus saya lakukan?" → p3k-darurat first aid steps
+
+**For village officials:**
+> "Cara urus KTP hilang?" → layanan-desa step-by-step guide
+
+**For UMKM owners:**
+> "Hitung HPP keripik singkong: bahan 200rb, tenaga 50rb, bikin 100 bungkus" → kalkulator-umkm
+
+---
+
+## 📊 Benchmarks & Performance
+
+### Model Routing Efficiency
+| Model | Avg Response Time | Memory Usage | Battery/hour | Best For |
+|-------|------------------|--------------|--------------|----------|
+| FunctionGemma 270M | 3.9s | 600MB | 15% | Simple queries |
+| Gemma-4-E2B | 20-30s | 2.5GB | 25% | Medium tasks |
+| Gemma-4-E4B | 2-6min | 3.6GB | 35% | Complex reasoning |
+
+### Fine-tuning (Unsloth)
+- **Training speed:** 2× faster than standard LoRA
+- **Memory efficiency:** 50% reduction
+- **Dataset:** 500 village-specific function examples
+- **Model published:** [HuggingFace Hub](https://huggingface.co/antonprafanto/desaai-functiongemma)
+
+### LiteRT Optimization
+- **Startup time:** <5s on mid-range devices
+- **Inference:** Fully quantized (int4/int8)
+- **Battery impact:** ~25% per hour active use (E2B model)
+- **Device support:** Tested on 2GB, 4GB, 8GB RAM devices
+
+---
+
+## 🏆 Gemma 4 Impact Challenge - Prize Alignment
+
+| Prize Track | How DesaAI Qualifies |
+|-------------|---------------------|
+| **Main Track ($50k)** | Comprehensive solution addressing real-world rural Indonesia challenges |
+| **Digital Equity & Inclusivity ($10k)** | Linguistic diversity (Javanese), offline-first, closes AI skills gap |
+| **Unsloth Prize ($10k)** | Fine-tuned FunctionGemma with Unsloth, 2× speed improvement documented |
+| **LiteRT Prize ($10k)** | On-device LiteRT implementation, multi-device benchmarks |
+| **Cactus Prize ($10k)** | Intelligent routing between 270M/E2B/E4B models |
+
+**Total potential:** $90,000
+
+---
+
+## 📹 Demo Video
+
+**Watch:** [DesaAI 3-minute demo on YouTube](#) _(Coming soon - video in production)_
+
+Shows real-world scenarios: farmers checking planting calendars, health workers using P3K guidance, village officials helping residents with forms—all 100% offline.
+
+---
+
+## 📚 Documentation
+
+- [Architecture Overview](docs/ARCHITECTURE.md) - Technical deep dive
+- [Skills Development Guide](gallery/skills/README.md) - How to create custom skills
+- [Fine-tuning Guide](docs/FINETUNING.md) - Unsloth training process
+- [Model Routing](docs/ROUTING.md) - Intelligent model selection algorithm
+- [Testing Notes](TESTING_NOTES_V2.md) - Device testing results
+
+---
+
+## 🤝 Contributing
+
+This project was created for the Gemma 4 Impact Challenge. After the competition, we welcome contributions to expand DesaAI's reach.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+---
 
 ## 📄 License
 
-Licensed under the Apache License, Version 2.0. See the [LICENSE](LICENSE) file for details.
+Dual-licensed:
+- **Gallery base code:** Apache 2.0 (Google LLC)
+- **DesaAI skills & modifications:** CC-BY 4.0
 
-## 🔗 Useful Links
+See [LICENSE.md](LICENSE.md) for full details.
 
-*   [**Project Wiki (Detailed Guides)**](https://github.com/google-ai-edge/gallery/wiki)
-*   [Hugging Face LiteRT Community](https://huggingface.co/litert-community)
-*   [LiteRT-LM](https://github.com/google-ai-edge/LiteRT-LM)
-*   [Google AI Edge Documentation](https://ai.google.dev/edge)
+---
+
+## 🙏 Acknowledgments
+
+- **Google AI Edge Team** for the incredible Gallery platform
+- **Gemma Team** for powerful, accessible open models
+- **Rural communities in Indonesia** - this project is built for you
+
+---
+
+## 📞 Contact
+
+- **Kaggle Competition:** [Gemma 4 Good Hackathon](https://www.kaggle.com/competitions/gemma-4-good-hackathon)
+- **Issues:** [GitHub Issues](../../issues)
+
+---
+
+**Built with ❤️ for Indonesia's rural communities**

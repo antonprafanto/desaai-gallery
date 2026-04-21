@@ -21,4 +21,10 @@ A playable, horizontally-scrolling virtual piano keyboard that uses web audio.
 
 ## Instructions
 
-Call the `run_js` tool
+Call the `run_js` tool with the following exact parameters:
+
+- skill name: `virtual-piano`
+- script name: `index.html`
+- data: `{}`
+
+After the webview loads, tell the user to tap the preview card to play the piano.

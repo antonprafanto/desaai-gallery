@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalkulator Pupuk</title>
+</head>
+<body>
+<script>
+window['ai_edge_gallery_get_result'] = async (dataStr) => {
+  try {
+    const input = JSON.parse(dataStr);
+    const tanamanRaw = (input.tanaman || 'padi').toLowerCase().trim();
+    const luas = parseFloat(input.luas) || 1.0;
+    const tanah = (input.tanah || '').toLowerCase();
+
+    // Normalize tanaman name
+    let tanaman = 'padi';
+    if (tanamanRaw.includes('jagung')) tanaman = 'jagung';
+    else if (tanamanRaw.includes('cabai') || tanamanRaw.includes('cabe')) tanaman = 'cabai';
+    else if (tanamanRaw.includes('tomat')) tanaman = 'tomat';
+    else if (tanamanRaw.includes('kacang')) tanaman = 'kacang';
+    else if (tanamanRaw.includes('singkong') || tanamanRaw.includes('ketela')) tanaman = 'singkong';
+    else if (tanamanRaw.includes('bawang')) tanaman = 'bawang';
+    else tanaman = 'padi';
+
+    // Base fertilizer data per 1 hektar (kg)
+    const dataPupuk = {
+      padi: {
+        nama: 'Padi',
+        emoji: '🌾',
+        pupuk: [
+          { nama: 'Urea (46% N)', jumlah: 250, tahap: 'Dasar 80kg + Anakan 100kg + Primordial 70kg', fungsi: 'Pertumbuhan daun & batang' },
+          { nama: 'SP-36 (36% P₂O₅)', jumlah: 100, tahap: 'Semua saat tanam', fungsi: 'Perkembangan akar & pembungaan' },
+          { nama: 'KCl (60% K₂O)', jumlah: 100, tahap: 'Dasar 50kg + Anakan 50kg', fungsi: 'Ketahanan batang & kualitas gabah' },
+          { nama: 'Pupuk kandang', jumlah: 2000, tahap: '1-2 minggu sebelum tanam', fungsi: 'Perbaikan struktur tanah' }
+        ],
+        harga: { 'Urea (46% N)': 2400, 'SP-36 (36% P₂O₅)': 2400, 'KCl (60% K₂O)': 4000, 'Pupuk kandang': 500 },
+        catatan: 'Dosis Urea dapat dikurangi 20% jika tanah subur atau ada bekas legum. Untuk tanah berpasir, tambah KCl 25kg/ha.'
+      },
+      jagung: {
+        nama: 'Jagung',
+        emoji: '🌽',
+        pupuk: [
+          { nama: 'Urea (46% N)', jumlah: 300, tahap: 'V3 150kg + V6 150kg', fungsi: 'Pertumbuhan vegetatif cepat' },
+          { nama: 'SP-36 (36% P₂O₅)', jumlah: 150, tahap: 'Semua saat tanam', fungsi: 'Pembentukan tongkol' },
+          { nama: 'KCl (60% K₂O)', jumlah: 100, tahap: 'V3 50kg + V6 50kg', fungsi: 'Pengisian biji' },
+          { nama: 'Pupuk kandang', jumlah: 3000, tahap: '1-2 minggu sebelum tanam', fungsi: 'Kesuburan & kelembaban tanah' }
+        ],
+        harga: { 'Urea (46% N)': 2400, 'SP-36 (36% P₂O₅)': 2400, 'KCl (60% K₂O)': 4000, 'Pupuk kandang': 500 },
+        catatan: 'Bisa diganti NPK Phonska 15-15-15 sebanyak 400 kg/ha untuk yang lebih praktis. Pupuk daun ZnSO4 2 kg/ha opsional untuk meningkatkan kualitas.'
+      },
+      cabai: {
+        nama: 'Cabai',
+        emoji: '🌶️',
+        pupuk: [
+          { nama: 'NPK Mutiara (16-16-16)', jumlah: 300, tahap: 'Tiap 2 minggu 20kg/ha sejak umur 2 minggu', fungsi: 'Pertumbuhan seimbang' },
+          { nama: 'Urea (46% N)', jumlah: 150, tahap: 'Umur 2-4-6 minggu @ 50kg/ha', fungsi: 'Pertumbuhan daun & cabang' },
+          { nama: 'KNO3 (Kalium Nitrat)', jumlah: 100, tahap: 'Saat mulai berbunga', fungsi: 'Memperbanyak buah & kualitas' },
+          { nama: 'Pupuk kandang matang', jumlah: 20000, tahap: 'Campurkan ke media tanam', fungsi: 'Drainase & nutrisi dasar' }
+        ],
+        harga: { 'NPK Mutiara (16-16-16)': 6000, 'Urea (46% N)': 2400, 'KNO3 (Kalium Nitrat)': 18000, 'Pupuk kandang matang': 800 },
+        catatan: 'Tambahkan pupuk daun (Growmore/Gandasil) tiap 1 minggu untuk hasil maksimal. Pastikan pH tanah 6.0-6.8.'
+      },
+      tomat: {
+        nama: 'Tomat',
+        emoji: '🍅',
+        pupuk: [
+          { nama: 'NPK Phonska (15-15-15)', jumlah: 250, tahap: 'Dasar 100kg + 2 kali susulan @ 75kg', fungsi: 'Pertumbuhan dan pembuahan' },
+          { nama: 'Urea (46% N)', jumlah: 100, tahap: 'Vegetatif @ 50kg + awal berbuah 50kg', fungsi: 'Pertumbuhan vegetatif' },
+          { nama: 'KCl (60% K₂O)', jumlah: 150, tahap: 'Saat berbuah hingga panen', fungsi: 'Kualitas dan warna buah' },
+          { nama: 'Pupuk kandang', jumlah: 15000, tahap: '1 minggu sebelum tanam', fungsi: 'Media tanam yang gembur' }
+        ],
+        harga: { 'NPK Phonska (15-15-15)': 2800, 'Urea (46% N)': 2400, 'KCl (60% K₂O)': 4000, 'Pupuk kandang': 800 },
+        catatan: 'Kalsium (CaO) 50 kg/ha disarankan untuk mencegah blossom end rot. Tomat sangat responsif terhadap pupuk kalium.'
+      },
+      kacang: {
+        nama: 'Kacang Tanah',
+        emoji: '🥜',
+        pupuk: [
+          { nama: 'Urea (46% N)', jumlah: 50, tahap: 'Saat tanam (starter dose)', fungsi: 'Starter N sebelum bintil aktif' },
+          { nama: 'SP-36 (36% P₂O₅)', jumlah: 100, tahap: 'Semua saat tanam', fungsi: 'Pembentukan polong' },
+          { nama: 'KCl (60% K₂O)', jumlah: 75, tahap: 'Saat tanam 50% + umur 30 hari 50%', fungsi: 'Pengisian biji & ketahanan' },
+          { nama: 'Kapur (Dolomit)', jumlah: 1000, tahap: '2 minggu sebelum tanam', fungsi: 'pH tanah & sumber Ca-Mg' }
+        ],
+        harga: { 'Urea (46% N)': 2400, 'SP-36 (36% P₂O₅)': 2400, 'KCl (60% K₂O)': 4000, 'Kapur (Dolomit)': 1000 },
+        catatan: 'Kacang tanah memfiksasi N sendiri lewat bintil akar — dosis Urea sengaja rendah. Inokulasi Rhizobium bisa menambah hasil 15-20%.'
+      },
+      singkong: {
+        nama: 'Singkong / Ketela',
+        emoji: '🍠',
+        pupuk: [
+          { nama: 'Urea (46% N)', jumlah: 200, tahap: 'Umur 1 bulan 100kg + 4 bulan 100kg', fungsi: 'Pertumbuhan batang & daun' },
+          { nama: 'SP-36 (36% P₂O₅)', jumlah: 100, tahap: 'Saat tanam semua', fungsi: 'Perkembangan umbi awal' },
+          { nama: 'KCl (60% K₂O)', jumlah: 150, tahap: 'Umur 3 bulan semua', fungsi: 'Pengisian dan kualitas umbi' },
+          { nama: 'Pupuk kandang', jumlah: 5000, tahap: 'Saat pengolahan tanah', fungsi: 'Kegemburan untuk umbi besar' }
+        ],
+        harga: { 'Urea (46% N)': 2400, 'SP-36 (36% P₂O₅)': 2400, 'KCl (60% K₂O)': 4000, 'Pupuk kandang': 500 },
+        catatan: 'Singkong relatif tahan kekurangan pupuk. Kalium sangat penting untuk ukuran dan kadar pati umbi.'
+      },
+      bawang: {
+        nama: 'Bawang Merah',
+        emoji: '🧅',
+        pupuk: [
+          { nama: 'Urea (46% N)', jumlah: 200, tahap: 'Umur 7, 14, 21, 28 hari @ 50kg', fungsi: 'Pertumbuhan daun & umbi' },
+          { nama: 'SP-36 (36% P₂O₅)', jumlah: 150, tahap: 'Dasar semua saat tanam', fungsi: 'Perkembangan perakaran & umbi' },
+          { nama: 'KCl (60% K₂O)', jumlah: 200, tahap: 'Dasar 100kg + umur 21 hari 100kg', fungsi: 'Ukuran & kualitas umbi' },
+          { nama: 'Pupuk kandang matang', jumlah: 10000, tahap: '1 minggu sebelum tanam', fungsi: 'Struktur tanah & nutrisi mikro' }
+        ],
+        harga: { 'Urea (46% N)': 2400, 'SP-36 (36% P₂O₅)': 2400, 'KCl (60% K₂O)': 4000, 'Pupuk kandang matang': 800 },
+        catatan: 'Bawang merah sangat rakus hara. Tambahkan pupuk daun Gandasil B mulai umur 2 minggu. Hindari genangan air.'
+      }
+    };
+
+    const data = dataPupuk[tanaman] || dataPupuk['padi'];
+
+    // Hitung kebutuhan per luas lahan
+    let totalBiaya = 0;
+    const rows = data.pupuk.map(p => {
+      const kebutuhan = Math.round(p.jumlah * luas);
+      const hargaSatuan = data.harga[p.nama] || 2500;
+      const biaya = kebutuhan * hargaSatuan;
+      totalBiaya += biaya;
+      return { ...p, kebutuhan, hargaSatuan, biaya };
+    });
+
+    // Format angka Rupiah
+    const rupiah = (n) => 'Rp ' + n.toLocaleString('id-ID');
+
+    // Catatan tanah
+    let catatanTanah = '';
+    if (tanah.includes('berpasir') || tanah.includes('pasir')) {
+      catatanTanah = '⚠️ Tanah berpasir: Tambah frekuensi pupuk (bagi menjadi lebih banyak tahap) karena hara mudah tercuci.';
+    } else if (tanah.includes('liat')) {
+      catatanTanah = '⚠️ Tanah liat: Pastikan drainase baik. Kurangi pupuk kandang karena tanah sudah kaya organik.';
+    } else if (tanah.includes('lempung')) {
+      catatanTanah = '✅ Tanah lempung: Kondisi ideal. Dosis standar sudah tepat.';
+    }
+
+    // Build result text untuk LLM
+    const resultText = [
+      `Hasil kalkulasi pupuk untuk ${data.nama} seluas ${luas} ha:`,
+      rows.map(r => `- ${r.nama}: ${r.kebutuhan.toLocaleString('id-ID')} kg (Biaya: ${rupiah(r.biaya)})`).join('\n'),
+      `Total estimasi biaya pupuk: ${rupiah(totalBiaya)}`,
+      catatanTanah ? `\nCatatan tanah: ${catatanTanah}` : '',
+      `\nCatatan: ${data.catatan}`
+    ].filter(Boolean).join('\n');
+
+    // Simpan data ke localStorage untuk webview
+    localStorage.setItem('kalkulator_pupuk_data', JSON.stringify({
+      tanaman: data.nama,
+      emoji: data.emoji,
+      luas,
+      rows,
+      totalBiaya,
+      catatan: data.catatan,
+      catatanTanah
+    }));
+
+    return JSON.stringify({
+      result: resultText,
+      webview: {
+        url: 'webview.html',
+        aspectRatio: 1.6
+      }
+    });
+
+  } catch (e) {
+    return JSON.stringify({ error: `Kalkulator Pupuk error: ${e.message}` });
+  }
+};
+</script>
+</body>
+</html>
